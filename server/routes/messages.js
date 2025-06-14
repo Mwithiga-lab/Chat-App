@@ -1,16 +1,15 @@
-// server/routes/messages.js
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const multer = require('multer');
-const path = require('path');
-const pool = require('../db');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import path from 'path';
+import pool from '../db.js';
 
 const upload = multer({
   dest: 'uploads/',
   limits: { fileSize: 10 * 1024 * 1024 }
 });
 
-module.exports = (wss) => {
+export default function(wss) {
   const router = express.Router();
 
   // Delete message by ID
@@ -95,17 +94,28 @@ router.put('/:id', async (req, res) => {
   // Get all messages
   router.get('/', async (req, res) => {
     try {
-      const messages = await pool.query(
-        `SELECT messages.*, users.username, users.avatar FROM messages
-         JOIN users ON messages.sender_id = users.id
-         ORDER BY messages.created_at ASC`
+      const result = await pool.query(
+        'SELECT messages.*, users.username FROM messages JOIN users ON messages.sender_id = users.id ORDER BY created_at ASC'
       );
-      res.json(messages.rows);
+      res.json(result.rows);
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Server error' });
+      res.status(500).json({ error: 'Database error' });
     }
   });
+
+  // Create a new message
+router.post('/', async (req, res) => {
+  const { sender_id, content } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO messages (sender_id, content) VALUES ($1, $2) RETURNING *',
+      [sender_id, content]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Database error' });
+  }
+});
 
   return router;
 };

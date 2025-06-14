@@ -1,10 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const multer = require('multer');
-const path = require('path');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const pool = require('../db');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
+import pool from '../db.js';
+import multer from 'multer';
+import path from 'path';
 
 // Multer storage for avatars
 const storage = multer.diskStorage({
@@ -15,6 +14,8 @@ const storage = multer.diskStorage({
   }
 });
 const upload = multer({ storage });
+
+const router = express.Router();
 
 // ✅ Register route (handles file + data)
 router.post('/register', upload.single('avatar'), async (req, res) => {
@@ -37,7 +38,7 @@ router.post('/register', upload.single('avatar'), async (req, res) => {
 });
 
 // ✅ Login route (handled by controller)
-const { login } = require('../controllers/authController');
+import { login } from '../controllers/authController.js';
 router.post('/login', login);
 
-module.exports = router;
+export default router;

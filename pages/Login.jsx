@@ -1,15 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
-const TEST_EMAIL = "test@example.com";
-const TEST_PASSWORD = "123456";
+import { login as loginApi, register } from "../Chat App/src/api/auth";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Login() {
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: TEST_EMAIL, // autofill test data
-    password: TEST_PASSWORD,
-  });
+  const { login } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -18,17 +15,14 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (
-      formData.email === TEST_EMAIL &&
-      formData.password === TEST_PASSWORD
-    ) {
-      console.log("Auto-login success!");
+    const res = await loginApi(formData);
+    if (res.token) {
+      login(res.token, res.user);
       navigate("/dashboard");
     } else {
-      alert("Invalid credentials. Try test@example.com / 123456");
+      alert(res.message || "Login failed");
     }
   };
 
@@ -66,7 +60,7 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          className="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition"
         >
           Login
         </button>

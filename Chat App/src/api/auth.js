@@ -1,5 +1,4 @@
-const API_URL = "http://localhost:5000/api/auth"; // Adjust port if needed
-import bcrypt from 'bcryptjs';
+const API_URL = "http://localhost:5000/api/auth";
 
 export async function register(data) {
   const res = await fetch(`${API_URL}/register`, {

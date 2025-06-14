@@ -1,9 +1,9 @@
 // server/controllers/authController.js
-const pool = require('../db');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import pool from '../db.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-exports.register = async (req, res) => {
+export async function register(req, res) {
   const { username, email, password,avatar } = req.body;
 
   try {
@@ -37,7 +37,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export async function login(req, res) {
   const { email, password } = req.body;
 
   try {

@@ -1,10 +1,10 @@
-// server/routes/reactions.js
-const express = require('express');
-const router = express.Router();
-const jwt = require('jsonwebtoken');
-const pool = require('../db');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import pool from '../db.js';
 
-module.exports = (wss) => {
+export default (wss) => {
+  const router = express.Router();
+
   // Add a new reaction and broadcast
   router.post('/', async (req, res) => {
     try {

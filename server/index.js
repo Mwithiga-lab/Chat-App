@@ -1,13 +1,19 @@
-const jwt = require('jsonwebtoken');
-const pool = require('./db'); // adjust if your pool is in another file
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import http from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { WebSocketServer } from 'ws';
+import jwt from 'jsonwebtoken';
+import pool from './db.js';
+import authRoutes from './routes/auth.js';
+import setupMessagesRoutes from './routes/messages.js';
+import setupReactionsRoutes from './routes/reactions.js';
 
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-//const reactionsRoutes = require('./routes/reactions');  Import reactions routes
-const http = require('http');
-const path = require('path');
-const { WebSocketServer } = require('ws');
+// Define __filename and __dirname BEFORE using them
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
@@ -22,18 +28,13 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Import routes
-const authRoutes = require('./routes/auth');
-
-const setupMessagesRoutes =   require('./routes/messages');
-const setupReactionsRoutes = require('./routes/reactions'); // Import reactions routes
-
-const messagesRoutes = setupMessagesRoutes(wss); // Import messages routes and pass WebSocket server
+const messagesRoutes = setupMessagesRoutes(wss); 
 const reactionRoutes = setupReactionsRoutes(wss); // Import reactions routes and pass WebSocket server
 
 // Use routes
 app.use('/api/reactions', reactionRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/messages', messagesRoutes);
+app.use('/api/messages', messagesRoutes); 
 
 // Routes
 app.get('/', (req, res) => {
